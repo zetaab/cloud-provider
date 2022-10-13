@@ -708,11 +708,15 @@ func (c *Controller) syncNodes(ctx context.Context, workers int) sets.String {
 func (c *Controller) nodeSyncService(svc *v1.Service, oldNodes, newNodes []*v1.Node) bool {
 	retSuccess := false
 	retNeedRetry := true
+	klog.Infof("DEBUG nodeSyncService hit")
 	if svc == nil || !wantsLoadBalancer(svc) {
 		return retSuccess
 	}
+	klog.Infof("DEBUG2 nodeSyncService %s", svc.Name)
+
 	newNodes = filterWithPredicates(newNodes, getNodePredicatesForService(svc)...)
 	oldNodes = filterWithPredicates(oldNodes, getNodePredicatesForService(svc)...)
+	klog.Infof("DEBUG3 nodeSyncService %s %+v %+v", svc.Name, nodeNames(newNodes), nodeNames(oldNodes))
 	if nodeNames(newNodes).Equal(nodeNames(oldNodes)) {
 		return retSuccess
 	}
